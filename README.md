@@ -4,7 +4,7 @@ This library is a [pybind11](https://github.com/pybind/pybind11) port of [spotif
 
 # Installation 
 
-To install, just do `pip install annoy` to pull down from [PyPI](https://pypi.python.org/pypi/annoy).
+To install, just do `pip install fastannoy` to pull down from [PyPI](https://pypi.python.org/pypi/fastannoy).
 
 ## Install from source code
 
