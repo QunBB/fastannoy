@@ -19,7 +19,7 @@ However, it's written in pybind11 for python interface, and discovered better pe
 
 # Usage
 
-All basic interfaces is same as [spotify/annoy](spotify/annoy).
+All basic interfaces is same as [spotify/annoy](https://github.com/spotify/annoy?tab=readme-ov-file#full-python-api).
 
 ```python
 from fastannoy import AnnoyIndex

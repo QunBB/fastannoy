@@ -5,11 +5,11 @@ import os
 import platform
 import sys
 
-_version_ = '1.0'
+_version_ = '1.0.0'
 
 readme_note = """\
 
-   `GitHub repository <https://github.com/QunBB/fastannoy>`_\n\n
+   GitHub repository <https://github.com/QunBB/fastannoy>
 
 """
 
@@ -69,10 +69,12 @@ setup(name='fastannoy',
           )
       ],
       long_description=long_description,
+      long_description_content_type='text/markdown',
       author='Qun',
       author_email='myqun20190810@163.com',
       url='https://github.com/QunBB/fastannoy',
       license='Apache License 2.0',
+      python_requires=">=2.7",
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Programming Language :: Python',

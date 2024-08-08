@@ -180,7 +180,7 @@ struct PyAnnoy {
     }
 
     py::object get_nns_by_vector(py::array_t<float> w, int32_t n, int32_t search_k, bool include_distances) {
-      if (w.ndim() != 1 | w.size() != f){
+      if (w.ndim() != 1 || w.size() != f){
         throw py::type_error("vector's dimension must be one and size must be equal to f");
       }
       vector<int32_t> result;
