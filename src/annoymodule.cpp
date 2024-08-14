@@ -373,7 +373,7 @@ struct PyAnnoy {
         if (n_threads > size){
           n_threads = size;
         }
-        vector<std::thread> threads(n_threads);
+        vector<std::thread> threads;
         int chunk_size = size / n_threads;
         int remainder = size % n_threads;
         int start = 0;
