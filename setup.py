@@ -5,7 +5,7 @@ import os
 import platform
 import sys
 
-_version_ = '1.0.0'
+_version_ = '1.1.0'
 
 readme_note = """\
 

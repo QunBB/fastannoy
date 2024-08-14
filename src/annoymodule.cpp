@@ -302,9 +302,9 @@ struct PyAnnoy {
 
         // reserve for avoiding vector's non-thread-safe when dynamic allocation with multi-threads
         for (int i = 0; i < size; i++){
-          result.push_back(vector<int32_t>());
+          result.emplace_back(vector<int32_t>());
           result[i].reserve(n);
-          distances.push_back(vector<float>());
+          distances.emplace_back(vector<float>());
           if (include_distances){
             distances[i].reserve(n);
           }
@@ -313,19 +313,22 @@ struct PyAnnoy {
         if (n_threads > size){
           n_threads = size;
         }
-        vector<std::thread> threads(n_threads);
-        int bs = (int)ceil((double)size / n_threads);
+        vector<std::thread> threads;
+        int chunk_size = size / n_threads;
+        int remainder = size % n_threads;
+        int start = 0;
 
         Py_BEGIN_ALLOW_THREADS;
         for (int thread_idx = 0; thread_idx < n_threads; thread_idx++) {
-          threads[thread_idx] = std::thread(
-            [items_data, n, search_k, include_distances, thread_idx, bs, size](vector<vector<int32_t>> &result, vector<vector<float>> &distances,  AnnoyIndexInterface<int32_t, float>* ptr){
-              for (int i = bs * thread_idx; i < size & i < bs * (thread_idx + 1); i++){
+          int end = start + chunk_size + (thread_idx < remainder ? 1 : 0);
+          threads.emplace_back(
+            [&, start, end](){
+              for (int i = start; i < end; i++){
                 ptr->get_nns_by_item(items_data(i), n, search_k, &(result[i]), include_distances ? &(distances[i]) : NULL);
               }
-            },
-            std::ref(result), std::ref(distances), ptr
+            }
           );
+          start = end;
         }
 
         for (auto& thread : threads) {
@@ -359,9 +362,9 @@ struct PyAnnoy {
 
         // reserve for avoiding vector's non-thread-safe when dynamic allocation with multi-threads
         for (int i = 0; i < size; i++){
-          result.push_back(vector<int32_t>());
+          result.emplace_back(vector<int32_t>());
           result[i].reserve(n);
-          distances.push_back(vector<float>());
+          distances.emplace_back(vector<float>());
           if (include_distances){
             distances[i].reserve(n);
           }
@@ -371,20 +374,23 @@ struct PyAnnoy {
           n_threads = size;
         }
         vector<std::thread> threads(n_threads);
-        int bs = (int)ceil((double)size / n_threads);
+        int chunk_size = size / n_threads;
+        int remainder = size % n_threads;
+        int start = 0;
 
         Py_BEGIN_ALLOW_THREADS;
         for (int thread_idx = 0; thread_idx < n_threads; thread_idx++) {
-          threads[thread_idx] = std::thread(
-            [n, search_k, include_distances, thread_idx, bs, size](py::array_t<float> &vectors, vector<vector<int32_t>> &result, vector<vector<float>> &distances,  AnnoyIndexInterface<int32_t, float>* ptr, int f){
-              for (int i = bs * thread_idx; i < size & i < bs * (thread_idx + 1); i++){
+          int end = start + chunk_size + (thread_idx < remainder ? 1 : 0);
+          threads.emplace_back(
+            [&, start, end](){
+              for (int i = start; i < end; i++){
                 // py::array vec = vectors[py::make_tuple(0, py::ellipsis())];
                 // ptr->get_nns_by_vector((float*)vec.data(), n, search_k, &(result[i]), include_distances ? &(distances[i]) : NULL);
                 ptr->get_nns_by_vector((vectors.data()+i*f), n, search_k, &(result[i]), include_distances ? &(distances[i]) : NULL);
               }
-            },
-            std::ref(vectors), std::ref(result), std::ref(distances), ptr, f
+            }
           );
+          start = end;
         }
 
         for (auto& thread : threads) {
